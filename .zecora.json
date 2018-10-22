@@ -1,0 +1,8 @@
+{
+	// TODO Should be finer grained, and not assume GitHub
+	"source": "@DEGoodmanWilson/Zecora-test-target-library",
+	// TODO could also be branches.
+	// TODO should not just be git features!
+	"version_location": "tags",
+	"version_pattern": "v\d\.\d\.\d"
+}
