@@ -16,7 +16,7 @@ class LibtestzecoraConan(ConanFile):
     license = "MIT"
 
     # Packages the license for the conanfile.py
-    exports = ["LICENSE"]
+    exports = ["LICENSE.md"]
 
     # Remove following lines if the target lib does not use cmake.
     exports_sources = ["CMakeLists.txt"]
@@ -37,7 +37,7 @@ class LibtestzecoraConan(ConanFile):
 
     def source(self):
         source_url = "https://github.com/DEGoodmanWilson/Zecora-test-target-library"
-        tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
+        tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version), sha256="557536a329dbebc381d0875ba2c7830ae49edd19e7a18d88a275aa01b1b4d7b5")
         extracted_dir = "Zecora-test-target-library" + "-" + self.version
 
         # Rename to "source_subfolder" is a convention to simplify later steps
@@ -45,8 +45,7 @@ class LibtestzecoraConan(ConanFile):
 
     def _configure_cmake(self):
         cmake = CMake(self)
-        cmake.definitions["BUILD_TESTS"] = False  # example
-        cmake.configure(build_folder=self._build_subfolder)
+        cmake.configure(source_folder=self._source_subfolder, build_folder=self._build_subfolder)
         return cmake
 
     def build(self):
@@ -54,18 +53,11 @@ class LibtestzecoraConan(ConanFile):
         cmake.build()
 
     def package(self):
-        self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
+        self.copy(pattern="LICENSE*", dst="licenses", src=self._source_subfolder)
+
+        # cmake installs all the files
         cmake = self._configure_cmake()
         cmake.install()
-        # If the CMakeLists.txt has a proper install method, the steps below may be redundant
-        # If so, you can just remove the lines below
-        include_folder = os.path.join(self._source_subfolder, "include")
-        self.copy(pattern="*", dst="include", src=include_folder)
-        self.copy(pattern="*.dll", dst="bin", keep_path=False)
-        self.copy(pattern="*.lib", dst="lib", keep_path=False)
-        self.copy(pattern="*.a", dst="lib", keep_path=False)
-        self.copy(pattern="*.so*", dst="lib", keep_path=False)
-        self.copy(pattern="*.dylib", dst="lib", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
